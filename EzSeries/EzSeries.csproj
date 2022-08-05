@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>AnyCPU;x64</Platforms>
+    <AssemblyName>EzSeries</AssemblyName>
+    <RootNamespace>EzSeries</RootNamespace>
+    <LangVersion>10</LangVersion>
+    <PackageId>EzSeries</PackageId>
+    <Authors>EzSeries</Authors>
+    <Company>EzSeries</Company>
+    <Product>EzSeries</Product>
+    <AssemblyVersion>1.1.6</AssemblyVersion>
+    <FileVersion>1.1.6</FileVersion>
+    <PackageVersion>1.1.6</PackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Oasys.Common">
+      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\Oasys.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Oasys.SDK">
+      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\Oasys.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D9">
+      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\SharpDX.Direct3D9.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files\Oasys\Modules\$(ProjectName).omod&quot; /Y&#xA;&#xA;echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Users\aliniti\Documents\GitHub\Oasys-EzSeries\$(ProjectName).omod&quot; /Y" />
+  </Target>
+
+</Project>
