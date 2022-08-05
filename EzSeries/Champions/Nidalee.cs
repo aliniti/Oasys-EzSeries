@@ -25,7 +25,6 @@ namespace EzSeries.Champions
         #region Fields
 
         private int _aaCounter;
-
         private Switch _checkQ;
         private float _cq;
         private float _cw, _ce;
@@ -180,7 +179,23 @@ namespace EzSeries.Champions
 
         private async Task OnCoreMainTick()
         {
-            HandleSpellTimers();
+            // if cougar q == 0 then ready
+            _cq = _stamps["Takedown"] - GameEngine.GameTime > 0 ? _stamps["Takedown"] - GameEngine.GameTime : 0;
+            
+            // if cougar w == 0 then ready
+            _cw = _stamps["Pounce"] - GameEngine.GameTime > 0 ? _stamps["Pounce"] - GameEngine.GameTime : 0;
+            
+            // if cougar e == 0 then ready
+            _ce = _stamps["Swipe"] - GameEngine.GameTime > 0 ? _stamps["Swipe"] - GameEngine.GameTime : 0;
+            
+            // if human q == 0 then ready
+            _hq = _stamps["JavelinToss"] - GameEngine.GameTime > 0 ? _stamps["JavelinToss"] - GameEngine.GameTime : 0;
+            
+            // if human w == 0 then ready
+            _hw = _stamps["Bushwhack"] - GameEngine.GameTime > 0 ? _stamps["Bushwhack"] - GameEngine.GameTime : 0;
+            
+            // if human e == 0 then ready
+            _he = _stamps["PrimalSurge"] - GameEngine.GameTime > 0 ? _stamps["PrimalSurge"] - GameEngine.GameTime : 0;
         }
 
         private async Task OnCreateObject(List<AIBaseClient> unitList, AIBaseClient unit, float time)
@@ -209,40 +224,32 @@ namespace EzSeries.Champions
 
         #region Human & Cougar Combat
 
-        private void HandleSpellTimers()
-        {
-            _cq = _stamps["Takedown"] - GameEngine.GameTime > 0 ? _stamps["Takedown"] - GameEngine.GameTime : 0;
-            _cw = _stamps["Pounce"] - GameEngine.GameTime > 0 ? _stamps["Pounce"] - GameEngine.GameTime : 0;
-            _ce = _stamps["Swipe"] - GameEngine.GameTime > 0 ? _stamps["Swipe"] - GameEngine.GameTime : 0;
-            _hq = _stamps["JavelinToss"] - GameEngine.GameTime > 0 ? _stamps["JavelinToss"] - GameEngine.GameTime : 0;
-            _hw = _stamps["Bushwhack"] - GameEngine.GameTime > 0 ? _stamps["Bushwhack"] - GameEngine.GameTime : 0;
-            _he = _stamps["PrimalSurge"] - GameEngine.GameTime > 0 ? _stamps["PrimalSurge"] - GameEngine.GameTime : 0;
-        }
-
         private void CastSpear(AIBaseClient unit)
         {
             if (unit == null || !unit.IsValidTarget()) return;
             if (IsCatForm || !(_hq < 1)) return;
 
-            if (unit.Distance(Me) <= 1500)
+            if (!(unit.Distance(Me) <= 1500)) return;
+            
+            if (_checkQ.IsOn)
             {
-                if (_checkQ.IsOn)
-                {
-                    var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
-                    if (pOutput.Hitchance >= LS.HitChance.VeryHigh)
-                        SpellCastProvider.CastSpell(CastSlot.Q, pOutput.CastPosition);
-                }
-                else
-                {
-                    var pInput = new Prediction.MenuSelected.PredictionInput(
-                        Prediction.MenuSelected.PredictionType.Line, unit, 1500, 40, 0.25f, 1300,
-                        Me.Position, true);
+                var pInput = new Prediction.MenuSelected.PredictionInput(
+                    Prediction.MenuSelected.PredictionType.Line, unit, 1500, 40, 0.25f, 1300,
+                    Me.Position, true);
 
+                var predictionOutput = Prediction.MenuSelected.GetPrediction(pInput);
+                if (predictionOutput.HitChance >= Prediction.MenuSelected.HitChance.VeryHigh)
+                    SpellCastProvider.CastSpell(CastSlot.Q, predictionOutput.CastPosition);
+            }
+            else
+            {
+                var pInput = new Prediction.MenuSelected.PredictionInput(
+                    Prediction.MenuSelected.PredictionType.Line, unit, 1500, 40, 0.25f, 1300,
+                    Me.Position, true);
 
-                    var predictionOutput = Prediction.MenuSelected.GetPrediction(pInput);
-                    if (predictionOutput.HitChance >= Prediction.MenuSelected.HitChance.High)
-                        SpellCastProvider.CastSpell(CastSlot.Q, predictionOutput.CastPosition);
-                }
+                var predictionOutput = Prediction.MenuSelected.GetPrediction(pInput);
+                if (predictionOutput.HitChance >= Prediction.MenuSelected.HitChance.High)
+                    SpellCastProvider.CastSpell(CastSlot.Q, predictionOutput.CastPosition);
             }
         }
 
