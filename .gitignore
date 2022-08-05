@@ -222,5 +222,5 @@ pip-log.txt
 #*.dll
 *.v2
 *.v1
-Trinity/.editorconfig
-Trinity/.idea/
+EzSeries/.editorconfig
+EzSeries/.idea/

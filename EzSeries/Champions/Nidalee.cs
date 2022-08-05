@@ -14,9 +14,9 @@ namespace EzSeries.Champions
     using Oasys.SDK.Events;
     using Oasys.SDK.Rendering;
     using Oasys.SDK.SpellCasting;
-    using Oasys.SDK.Tools;
     using SharpDX;
     using Orbwalker = Oasys.SDK.Orbwalker;
+    using TargetSelector = Oasys.SDK.TargetSelector;
 
     #endregion
 
@@ -25,14 +25,14 @@ namespace EzSeries.Champions
         #region Fields
 
         private int _aaCounter;
-        private float _cq;
-        private float _cw, _ce;
-        private float _hq, _hw, _he;
 
         private Switch _checkQ;
+        private float _cq;
+        private float _cw, _ce;
         private Switch _debug;
+        private float _hq, _hw, _he;
 
-        private Dictionary<string, float> _stamps = new();
+        private readonly Dictionary<string, float> _stamps = new();
 
         #endregion
 
@@ -52,7 +52,7 @@ namespace EzSeries.Champions
             CoreEvents.OnCoreMainTick += OnCoreMainTick;
             GameEvents.OnCreateObject += OnCreateObject;
             GameEvents.OnProcessSpell += OnProcessSpell;
-            
+
             CoreEvents.OnCoreMainInputAsync += OnMainInput;
             CoreEvents.OnCoreLaneclearInputAsync += OnLaneClearInput;
             Orbwalker.OnOrbwalkerAfterBasicAttack += ( time,  target) => _aaCounter++;
@@ -67,41 +67,6 @@ namespace EzSeries.Champions
 
             PluginTab.AddItem(_checkQ = new Switch { IsOn = false, Title = "Use VeryHigh HitChance" });
             PluginTab.AddItem(_debug = new Switch { Title = "Debug Timers", IsOn = false });
-        }
-
-        private async Task OnLaneClearInput()
-        {
-            foreach (var u in ObjectManagerExport.JungleObjectCollection)
-            {
-                var minion = u.Value;
-                if (minion.Name.Contains("Mini")) continue;
-                if (minion.Name.Contains("Plant")) continue;
-                    
-                CastSpear(minion);
-                CastBushwhack(minion);
-                CastPrimalSurge(minion, OrbwalkingMode.LaneClear);
-                SwitchHumanToCat(minion, OrbwalkingMode.LaneClear);
-                SwitchCatToHuman(minion, OrbwalkingMode.LaneClear);
-                CastSwipe(minion);
-                CastTakedown(minion);
-                CastPounce(minion);
-            }
-        }
-
-        private async Task OnMainInput()
-        {
-            var t = UnitManager.EnemyChampions.MinBy(Oasys.SDK.TargetSelector.AttacksLeftToKill);
-            if (t != null)
-            {
-                CastSpear(t);
-                CastBushwhack(t);
-                CastPrimalSurge(t, OrbwalkingMode.Combo);
-                SwitchHumanToCat(t, OrbwalkingMode.Combo);
-                SwitchCatToHuman(t, OrbwalkingMode.Combo);
-                CastSwipe(t);
-                CastTakedown(t);
-                CastPounce(t);
-            }
         }
 
         #endregion
@@ -121,14 +86,50 @@ namespace EzSeries.Champions
         #endregion
 
         #region Private Methods and Operators
+        
+        private async Task OnMainInput()
+        {
+            var t = UnitManager.EnemyChampions.MinBy(TargetSelector.AttacksLeftToKill);
+            if (t != null)
+            {
+                CastSpear(t);
+                CastBushwhack(t);
+                CastPrimalSurge(t, OrbwalkingMode.Combo);
+                SwitchHumanToCat(t, OrbwalkingMode.Combo);
+                SwitchCatToHuman(t, OrbwalkingMode.Combo);
+                CastSwipe(t);
+                CastTakedown(t);
+                CastPounce(t);
+            }
+        }
+        
+        private async Task OnLaneClearInput()
+        {
+            foreach (var u in ObjectManagerExport.JungleObjectCollection)
+            {
+                var minion = u.Value;
+                if (minion.Name.Contains("Mini")) continue;
+                if (minion.Name.Contains("Plant")) continue;
+
+                CastSpear(minion);
+                CastBushwhack(minion);
+                CastPrimalSurge(minion, OrbwalkingMode.LaneClear);
+                SwitchHumanToCat(minion, OrbwalkingMode.LaneClear);
+                SwitchCatToHuman(minion, OrbwalkingMode.LaneClear);
+                CastSwipe(minion);
+                CastTakedown(minion);
+                CastPounce(minion);
+            }
+        }
+
 
         private void OnRender()
         {
             if (!_debug.IsOn) return;
-            
+
             // debug draw timers
             var wts = LeagueNativeRendererManager.WorldToScreen(Me.Position);
-            
+
             // draw timers for opposite form stance
             var cougarText = "Q: " + _cq + " W: " + _cw + " E: " + _ce;
             var humanText = "Q: " + _hq + " W: " + _hw + " E: " + _he;
@@ -143,13 +144,11 @@ namespace EzSeries.Champions
             if (!unit.IsMe) return;
 
             if (spell.IsBasicAttack)
-            {
                 if (Me.BuffManager.HasBuff("Takedown") && _cq < 1)
                 {
                     var cd = 6 * (100 / (100 + Me.UnitStats.AbilityHaste));
                     _stamps["Takedown"] = GameEngine.GameTime + cd;
                 }
-            }
 
             if (spell.SpellData.SpellName == "Swipe")
             {
@@ -178,7 +177,7 @@ namespace EzSeries.Champions
                 _stamps["PrimalSurge"] = GameEngine.GameTime + cd;
             }
         }
-        
+
         private async Task OnCoreMainTick()
         {
             HandleSpellTimers();
@@ -237,7 +236,7 @@ namespace EzSeries.Champions
                 {
                     var pInput = new Prediction.MenuSelected.PredictionInput(
                         Prediction.MenuSelected.PredictionType.Line, unit, 1500, 40, 0.25f, 1300,
-                            Me.Position, true);
+                        Me.Position, true);
 
 
                     var predictionOutput = Prediction.MenuSelected.GetPrediction(pInput);
@@ -287,7 +286,7 @@ namespace EzSeries.Champions
             if (IsCatForm && _cq < 1)
                 if (unit.Distance(Me) <= 300)
                     if (SpellCastProvider.CastSpell(CastSlot.Q, Me.Position))
-                        Oasys.SDK.Orbwalker.AttackReset();
+                        Orbwalker.AttackReset();
         }
 
         private void CastPounce(AIBaseClient unit)
@@ -339,7 +338,7 @@ namespace EzSeries.Champions
                     if (_cq > 1 && _cw > 1 && _ce > 1)
                         SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
 
-                    if (_hq < 1 && (_cw >= 3|| unit.Distance(Me) > 375))
+                    if (_hq < 1 && (_cw >= 3 || unit.Distance(Me) > 375))
                         SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
                 }
             }
@@ -350,61 +349,50 @@ namespace EzSeries.Champions
             if (unit == null || !unit.IsValidTarget()) return;
             var r = Me.GetSpellBook().GetSpellClass(SpellSlot.R);
 
-            switch (IsCatForm)
+            if (IsCatForm || !r.IsSpellReady) return;
+            
+            if (IsHunted(unit))
             {
-                case false when r.IsSpellReady:
+                if (_cw > 1) return;
+                if (!(unit.Distance(Me) <= 750)) return;
+                
+                if (mode != OrbwalkingMode.LaneClear)
                 {
-                    if (IsHunted(unit))
-                    {
-                        if (_cw > 1) return;
-                        
-                        if (unit.Distance(Me) <= 750)
-                        {
-                            if (mode != OrbwalkingMode.LaneClear)
-                            {
-                                if (_cq < 1 || _ce < 1)
-                                    SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
-                            }
-                            else
-                            {
-                                if (HasPrimalSurge() && _aaCounter >= 3 || _aaCounter >= 2)
-                                {
-                                    SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (unit.Distance(Me) <= 375)
-                        {
-                            if (_checkQ.IsOn)
-                            {
-                                var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
-                                if (pOutput.Hitchance < LS.HitChance.VeryHigh)
-                                    SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
-                            }
-                            else
-                            {
-                                var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
-                                if (pOutput.Hitchance < LS.HitChance.High)
-                                    SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
-                            }
+                    if (_cq < 1 || _ce < 1)
+                        SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
+                }
+                else
+                {
+                    if ((HasPrimalSurge() && _aaCounter >= 3) || _aaCounter >= 2)
+                        SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
+                }
+            }
+            else
+            {
+                if (!(unit.Distance(Me) <= 375)) return;
+                
+                if (_checkQ.IsOn)
+                {
+                    var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
+                    if (pOutput.Hitchance < LS.HitChance.VeryHigh)
+                        SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
+                }
+                else
+                {
+                    var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
+                    if (pOutput.Hitchance < LS.HitChance.High)
+                        SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
+                }
 
-                            if (mode != OrbwalkingMode.LaneClear)
-                            {
-                                if (_hq > 1)
-                                    SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
-                            }
-                            else 
-                            {
-                                if (_hq > 1 && _hw > 1)
-                                    SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
-                            }
-                        }
-                    }
-
-                    break;
+                if (mode != OrbwalkingMode.LaneClear)
+                {
+                    if (_hq > 1)
+                        SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
+                }
+                else
+                {
+                    if (_hq > 1 && _hw > 1)
+                        SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
                 }
             }
         }
