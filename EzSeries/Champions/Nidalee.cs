@@ -23,14 +23,14 @@ namespace EzSeries.Champions
     public class Nidalee : Plugin
     {
         #region Fields
-
-        private int _aaCounter;
-        private Switch _checkQ;
+        
+        private Switch _checkq;
+        private Switch _debug;
+        
+        private int _aa;
         private float _cq;
         private float _cw, _ce;
-        private Switch _debug;
         private float _hq, _hw, _he;
-
         private readonly Dictionary<string, float> _stamps = new();
 
         #endregion
@@ -39,7 +39,9 @@ namespace EzSeries.Champions
 
         // currently the only efficient way
         private bool IsCatForm => Me.AttackRange < 200;
-        public override string PluginName { get; set; } = "Nidalee";
+        private bool IsHunted(AIBaseClient unit) => unit.BuffManager.HasActiveBuff("NidaleePassiveHunted");
+        private bool HasPrimalSurge() => Me.BuffManager.HasActiveBuff("Primalsurge");
+        protected override string PluginName { get; set; } = "Nidalee";
 
         #endregion
 
@@ -54,7 +56,7 @@ namespace EzSeries.Champions
 
             CoreEvents.OnCoreMainInputAsync += OnMainInput;
             CoreEvents.OnCoreLaneclearInputAsync += OnLaneClearInput;
-            Orbwalker.OnOrbwalkerAfterBasicAttack += ( time,  target) => _aaCounter++;
+            Orbwalker.OnOrbwalkerAfterBasicAttack += ( time,  target) => _aa++;
 
             _stamps["Takedown"] = 0;
             _stamps["Pounce"] = 0;
@@ -64,22 +66,8 @@ namespace EzSeries.Champions
             _stamps["PrimalSurge"] = 0;
             _stamps["Bushwhack"] = 0;
 
-            PluginTab.AddItem(_checkQ = new Switch { IsOn = false, Title = "Use VeryHigh HitChance" });
+            PluginTab.AddItem(_checkq = new Switch { IsOn = false, Title = "Use VeryHigh HitChance" });
             PluginTab.AddItem(_debug = new Switch { Title = "Debug Timers", IsOn = false });
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public bool IsHunted(AIBaseClient unit)
-        {
-            return unit.BuffManager.HasActiveBuff("NidaleePassiveHunted");
-        }
-
-        public bool HasPrimalSurge()
-        {
-            return Me.BuffManager.HasActiveBuff("Primalsurge");
         }
 
         #endregion
@@ -88,7 +76,8 @@ namespace EzSeries.Champions
         
         private async Task OnMainInput()
         {
-            var t = UnitManager.EnemyChampions.MinBy(TargetSelector.AttacksLeftToKill);
+            var pref = UnitManager.EnemyChampions.FirstOrDefault(IsHunted);
+            var t = pref ?? UnitManager.EnemyChampions.MinBy(TargetSelector.AttacksLeftToKill);
             if (t != null)
             {
                 CastSpear(t);
@@ -157,7 +146,7 @@ namespace EzSeries.Champions
 
             if (spell.SpellData.SpellName == "JavelinToss")
             {
-                _aaCounter = 0;
+                _aa = 0;
                 var cd = 6 * (100 / (100 + Me.UnitStats.AbilityHaste));
                 _stamps["JavelinToss"] = GameEngine.GameTime + cd;
             }
@@ -202,7 +191,7 @@ namespace EzSeries.Champions
         {
             if (unit.Name.Contains("Nidalee") && unit.Name.Contains("R_Cas"))
             {
-                _aaCounter = 0;
+                _aa = 0;
                 var cd = 3 * (100 / (100 + Me.UnitStats.AbilityHaste));
                 _stamps["AspectOfCougar"] = GameEngine.GameTime + cd;
             }
@@ -231,7 +220,7 @@ namespace EzSeries.Champions
 
             if (!(unit.Distance(Me) <= 1500)) return;
             
-            if (_checkQ.IsOn)
+            if (_checkq.IsOn)
             {
                 var pInput = new Prediction.MenuSelected.PredictionInput(
                     Prediction.MenuSelected.PredictionType.Line, unit, 1500, 40, 0.25f, 1300,
@@ -327,7 +316,7 @@ namespace EzSeries.Champions
             {
                 if (_hq < 1 && (_cw >= 3 || unit.Distance(Me) > 375))
                 {
-                    if (_checkQ.IsOn)
+                    if (_checkq.IsOn)
                     {
                         var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
                         if (pOutput.Hitchance >= LS.HitChance.VeryHigh)
@@ -370,7 +359,7 @@ namespace EzSeries.Champions
                 }
                 else
                 {
-                    if ((HasPrimalSurge() && _aaCounter >= 3) || _aaCounter >= 2)
+                    if ((HasPrimalSurge() && _aa >= 3) || _aa >= 2)
                         SpellCastProvider.CastSpell(CastSlot.R, Me.Position);
                 }
             }
@@ -378,7 +367,7 @@ namespace EzSeries.Champions
             {
                 if (!(unit.Distance(Me) <= 375)) return;
                 
-                if (_checkQ.IsOn)
+                if (_checkq.IsOn)
                 {
                     var pOutput = LS.Prediction.GetPrediction(unit, 0.25f, 40, 1300);
                     if (pOutput.Hitchance < LS.HitChance.VeryHigh)

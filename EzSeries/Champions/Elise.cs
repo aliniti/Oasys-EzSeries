@@ -40,7 +40,7 @@ namespace EzSeries.Champions
             return 0;
         }
 
-        public override string PluginName { get; set; } = "Elise";
+        protected override string PluginName { get; set; } = "Elise";
 
         public override void OnLoadPlugin()
         {

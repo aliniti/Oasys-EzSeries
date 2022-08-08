@@ -14,15 +14,14 @@ namespace EzSeries.Helpers
     {
         #region Fields
 
-        private readonly Dictionary<string, bool> pDict = new ();
-        private int pNow;
-        
+        private readonly Dictionary<string, bool> _pDict = new ();
+
         #endregion
 
         #region Properties and Encapsulation
 
-        public AIHeroClient Me => UnitManager.MyChampion;
-        public abstract string PluginName { get; set; }
+        protected AIHeroClient Me => UnitManager.MyChampion;
+        protected abstract string PluginName { get; set; }
 
         public Tab MainTab { get; set; }
         public Tab PluginTab { get; set; }
@@ -45,10 +44,10 @@ namespace EzSeries.Helpers
                     MenuManager.AddTab(rootTab);
 
                     // check if plugin has been initialized
-                    if (!pDict.ContainsKey("Init"))
+                    if (!_pDict.ContainsKey("Init"))
                     {
                         Logger.Log("Initialized " + PluginName.ToLower() + " plugin!", LogSeverity.Neutral);
-                        pDict["Init"] = true;
+                        _pDict["Init"] = true;
                     }
                 }
                 else

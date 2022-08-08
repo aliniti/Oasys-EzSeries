@@ -9,7 +9,6 @@ namespace EzSeries.Champions
     using Oasys.Common.Menu.ItemComponents;
     using Oasys.SDK;
     using Oasys.SDK.Events;
-    using Oasys.SDK.Rendering;
     using Oasys.SDK.SpellCasting;
 
     public class Kindred : Plugin
@@ -17,17 +16,19 @@ namespace EzSeries.Champions
         private Switch _useQ = null!;
         private Switch _useW = null!;
         private Switch _useE = null!;
-        private InfoDisplay _useR = null!;
-        private Switch _gapCloseQ = null!;
-        public override string PluginName { get; set; } = "Kindred";
+
+        private string _ebuffName = "kindredecharge";
+        private string _passiveBuffName = "kindredhittracker";
+        private bool _isHunted(AIBaseClient unit) 
+            => unit.BuffManager.HasBuff(_ebuffName) || unit.BuffManager.HasBuff(_passiveBuffName);
+        
+        protected override string PluginName { get; set; } = "Kindred";
         public override void OnLoadPlugin()
         {
             PluginTab.AddItem(_useQ = new Switch { IsOn = true, Title = "Use Q"  });
-            PluginTab.AddItem(_gapCloseQ = new Switch { IsOn = true, Title = "Use Gapclose Q" });
             PluginTab.AddItem(_useW = new Switch {  IsOn = true, Title = "Use W" });
             PluginTab.AddItem(_useE = new Switch { IsOn = true, Title = "Use E" });
-            PluginTab.AddItem(_useR = new InfoDisplay { Title = "Use R (USE TRINITY)" });
-            
+
             Orbwalker.OnOrbwalkerAfterBasicAttack += OnAfterAttack;
             CoreEvents.OnCoreMainInputAsync += OnMainInput;
             CoreEvents.OnCoreLaneclearInputAsync += OnLaneClearInput;
@@ -41,7 +42,8 @@ namespace EzSeries.Champions
         
         private async Task OnMainInput()
         {
-            var t = UnitManager.EnemyChampions.MinBy(Oasys.SDK.TargetSelector.AttacksLeftToKill);
+            var pref = UnitManager.EnemyChampions.FirstOrDefault(_isHunted);
+            var t = pref ?? UnitManager.EnemyChampions.MinBy(Oasys.SDK.TargetSelector.AttacksLeftToKill);
             if (t != null)
             {
                 KindredQGap(t);
@@ -73,8 +75,7 @@ namespace EzSeries.Champions
                 return;
             
             if (!_useQ.IsOn) return;
-            if (!_gapCloseQ.IsOn) return;
-            
+
             if (unit.Distance(Me) <= Me.AttackRange + 300)
                 if (unit.Distance(Me) > Me.AttackRange)
                     SpellCastProvider.CastSpell(CastSlot.Q, GameEngine.WorldMousePosition);
