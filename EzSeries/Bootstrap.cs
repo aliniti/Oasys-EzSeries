@@ -2,6 +2,7 @@
 {
     using System.Reflection;
     using System.Reflection.Emit;
+    using Base;
     using Helpers;
     using Oasys.Common.Menu;
     using Oasys.SDK.Events;
@@ -9,8 +10,8 @@
 
     public class Bootstrap
     {
-        internal static Tab RootTab;
-        internal static List<Plugin> LoadedPlugins = new();
+        private static Tab _rootTab;
+        private static List<Plugin> _loadedPlugins = new();
         
         /// <summary>
         ///     The Oasys module entry point
@@ -26,8 +27,8 @@
         /// </summary>
         private static async Task OnLoad()
         {            
-            RootTab = new Tab("EzSeries: Settings");
-            GetTypesByGroup("Champions").ForEach(x => { NewPlugin((Plugin) NewInstance(x), RootTab); });
+            _rootTab = new Tab("EzSeries: Settings");
+            GetTypesByGroup("Champions").ForEach(x => { NewPlugin((Plugin) NewInstance(x), _rootTab); });
         }
 
         private static List<Type> GetTypesByGroup(string nspace)
@@ -59,8 +60,8 @@
         {
             try
             {
-                if (LoadedPlugins.Contains(plugin) == false)
-                    LoadedPlugins.Add(plugin.Init(parent, RootTab));
+                if (_loadedPlugins.Contains(plugin) == false)
+                    _loadedPlugins.Add(plugin.Init(parent, _rootTab));
             }
 
             catch (Exception e)

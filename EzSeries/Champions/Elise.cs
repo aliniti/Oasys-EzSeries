@@ -1,5 +1,6 @@
 namespace EzSeries.Champions
 {
+    using Base;
     using Helpers;
     using Oasys.Common;
     using Oasys.Common.Enums.GameEnums;

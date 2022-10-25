@@ -14,31 +14,34 @@
     <Authors>EzSeries</Authors>
     <Company>EzSeries</Company>
     <Product>EzSeries</Product>
-    <AssemblyVersion>1.1.8</AssemblyVersion>
-    <FileVersion>1.1.8</FileVersion>
-    <PackageVersion>1.1.8</PackageVersion>
+    <AssemblyVersion>1.3</AssemblyVersion>
+    <FileVersion>1.3</FileVersion>
+    <PackageVersion>1.3</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Oasys.Common">
-      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\Oasys.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Oasys.SDK.References\Oasys.Common.dll</HintPath>
     </Reference>
     <Reference Include="Oasys.SDK">
-      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\Oasys.SDK.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Oasys.SDK.References\Oasys.SDK.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Oasys.SDK.References\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop">
+      <HintPath>..\..\..\..\..\..\Oasys.SDK.References\SharpDX.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Oasys.SDK.References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Mathematics">
-      <HintPath>B:\Users\aliniti\Desktop\Oasys.SDK.References\SharpDX.Mathematics.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Oasys.SDK.References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files\Oasys\Modules\$(ProjectName).omod&quot; /Y&#xA;&#xA;echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Users\aliniti\Documents\GitHub\Oasys-EzSeries\$(ProjectName).omod&quot; /Y" />
+    <Exec Command="echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files\J6351825030155836664876686dcff61b6a91254a0458537072a1b26ad151b5cejb\Modules\$(ProjectName).omod&quot; /Y&#xA;&#xA;echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Users\aliniti\Documents\GitHub\Oasys-EzSeries\$(ProjectName).omod&quot; /Y" />
   </Target>
 
 </Project>

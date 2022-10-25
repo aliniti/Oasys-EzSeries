@@ -1,4 +1,4 @@
-namespace EzSeries.Helpers
+namespace EzSeries.Base
 {
     #region
 

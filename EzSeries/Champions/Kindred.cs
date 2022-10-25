@@ -1,5 +1,6 @@
 namespace EzSeries.Champions
 {
+    using Base;
     using Helpers;
     using Oasys.Common;
     using Oasys.Common.Enums.GameEnums;
@@ -43,7 +44,7 @@ namespace EzSeries.Champions
         private async Task OnMainInput()
         {
             var pref = UnitManager.EnemyChampions.FirstOrDefault(_isHunted);
-            var t = pref ?? UnitManager.EnemyChampions.MinBy(Oasys.SDK.TargetSelector.AttacksLeftToKill);
+            var t = pref ?? UnitManager.EnemyChampions.MinBy(TargetSelector.AttacksLeftToKill);
             if (t != null)
             {
                 KindredQGap(t);

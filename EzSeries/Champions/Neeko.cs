@@ -1,5 +1,6 @@
 namespace EzSeries.Champions
 {
+    using Base;
     using Helpers;
 
     public class Neeko : Plugin
