@@ -2,73 +2,85 @@
 {
     using System.Reflection;
     using System.Reflection.Emit;
-    using Base;
-    using Helpers;
+    using Models;
+    using Oasys.Common.EventsProvider;
     using Oasys.Common.Menu;
-    using Oasys.SDK.Events;
+    using Oasys.SDK;
+    using Oasys.SDK.Menu;
     using Oasys.SDK.Tools;
 
     public class Bootstrap
     {
-        private static Tab _rootTab;
-        private static List<Plugin> _loadedPlugins = new();
-        
+        /// <summary>
+        ///     The initialized champions
+        /// </summary>
+        private static readonly List<Champion> Champions = new();
+
         /// <summary>
         ///     The Oasys module entry point
         /// </summary>
-        [Oasys.SDK.OasysModuleEntryPoint]
+        [OasysModuleEntryPoint]
         public static void Execute()
         {
-            GameEvents.OnGameLoadComplete += OnLoad;
+            GameEvents.OnGameLoadComplete += OnGameLoadComplete;
+            GameEvents.OnGameMatchComplete += () => 
+            { 
+                Champions.Clear(); 
+                return Task.CompletedTask; 
+            };
+        }
+
+        /// <summary>
+        ///     Called when game load is complete
+        /// </summary>
+        private static Task OnGameLoadComplete()
+        {
+            var root = new Tab("EzSeries");
+            
+            foreach (var i in SupportedChampions("Module"))
+            {
+                var hero = (Champion) NewInstance(i);
+                hero.OnChampionInitialize += () => Champions.Add(hero);
+                hero.OnChampionDispose += () => Champions.Remove(hero);
+                hero.Initialize(root);
+            }
+            
+            MenuManager.AddTab(root);
+            
+            foreach (var hero in Champions)
+            {
+                CoreEvents.OnCoreMainTick += () => hero.OnGameUpdate();
+                CoreEvents.OnCoreMainInputAsync += () => hero.OnMainInput();
+                CoreEvents.OnCoreHarassInputAsync += () => hero.OnHarassInput();
+                CoreEvents.OnCoreLaneclearInputAsync += () => hero.OnLaneClearInput();
+            }
+            
+            return Task.CompletedTask;
         }
         
         /// <summary>
-        ///     Games events [on game load complete].
+        ///     Gets the supported champions
         /// </summary>
-        private static async Task OnLoad()
-        {            
-            _rootTab = new Tab("EzSeries: Settings");
-            GetTypesByGroup("Champions").ForEach(x => { NewPlugin((Plugin) NewInstance(x), _rootTab); });
-        }
-
-        private static List<Type> GetTypesByGroup(string nspace)
+        private static List<Type> SupportedChampions(string str)
         {
             try
             {
-                Type[] allowedTypes = new[] { typeof(Plugin) };
-                Logger.Log("Fetching plugins....", LogSeverity.Warning);
-                
+                var allowedTypes = new[] { typeof(Champion) };
+                Logger.Log("Fetching modules....", LogSeverity.Warning);
+            
                 return
                     Assembly.GetExecutingAssembly()
                         .GetTypes()
                         .Where(
                             t =>
-                                t.IsClass && t.Namespace == "EzSeries." + nspace &&
-                                allowedTypes.Any(x => x.IsAssignableFrom(t)))
+                                t.IsClass && t.Name == str 
+                                          && allowedTypes.Any(x => x.IsAssignableFrom(t)))
                         .ToList();
             }
-
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                Logger.Log("Exception thrown at EzSeries.GetTypesByGroup", LogSeverity.Danger);
+                Logger.Log("Exception thrown at fetching modules..", LogSeverity.Danger);
                 return null;
-            }
-        }
-        
-        private static void NewPlugin(Plugin plugin, Tab parent)
-        {
-            try
-            {
-                if (_loadedPlugins.Contains(plugin) == false)
-                    _loadedPlugins.Add(plugin.Init(parent, _rootTab));
-            }
-
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Logger.Log("Exception thrown at EzSeries.NewPlugin", LogSeverity.Danger);
-                throw;
             }
         }
         
