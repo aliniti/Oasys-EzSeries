@@ -23,11 +23,7 @@
         public static void Execute()
         {
             GameEvents.OnGameLoadComplete += OnGameLoadComplete;
-            GameEvents.OnGameMatchComplete += () => 
-            { 
-                Champions.Clear(); 
-                return Task.CompletedTask; 
-            };
+            GameEvents.OnGameMatchComplete += () => { Champions.Clear(); return Task.CompletedTask; };
         }
 
         /// <summary>
@@ -36,15 +32,14 @@
         private static Task OnGameLoadComplete()
         {
             var root = new Tab("EzSeries");
-            
-            foreach (var i in SupportedChampions("Module"))
+
+            foreach (var hero in SupportedChampions("Module").Select(i => (Champion) NewInstance(i)))
             {
-                var hero = (Champion) NewInstance(i);
                 hero.OnChampionInitialize += () => Champions.Add(hero);
                 hero.OnChampionDispose += () => Champions.Remove(hero);
                 hero.Initialize(root);
             }
-            
+
             MenuManager.AddTab(root);
             
             foreach (var hero in Champions)
@@ -61,6 +56,8 @@
         /// <summary>
         ///     Gets the supported champions
         /// </summary>
+        /// <param name="str">The module name.</param>
+        /// <returns></returns>
         private static List<Type> SupportedChampions(string str)
         {
             try
@@ -79,18 +76,22 @@
             }
             catch (Exception e)
             {
-                Logger.Log("Exception thrown at fetching modules..", LogSeverity.Danger);
+                Logger.Log("Exception thrown at EzSeries.SupportedChampions()..", LogSeverity.Danger);
                 return null;
             }
         }
-        
+        /// <summary>
+        ///     The alternative object generator
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         private static object NewInstance(Type type)
         {
             try
             {
-                ConstructorInfo? target = type.GetConstructor(Type.EmptyTypes);
-                DynamicMethod dynamic = new DynamicMethod(string.Empty, type, new Type[0], target.DeclaringType);
-                ILGenerator il = dynamic.GetILGenerator();
+                var target = type.GetConstructor(Type.EmptyTypes);
+                var dynamic = new DynamicMethod(string.Empty, type, new Type[0], target.DeclaringType);
+                var il = dynamic.GetILGenerator();
 
                 il.DeclareLocal(target.DeclaringType);
                 il.Emit(OpCodes.Newobj, target);
@@ -98,14 +99,13 @@
                 il.Emit(OpCodes.Ldloc_0);
                 il.Emit(OpCodes.Ret);
 
-                Func<object> method = (Func<object>)dynamic.CreateDelegate(typeof(Func<object>));
+                var method = (Func<object>)dynamic.CreateDelegate(typeof(Func<object>));
                 return method();
             }
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                Logger.Log("Exception thrown at EzSeries.NewInstance", LogSeverity.Danger);
+                Logger.Log("Exception thrown at EzSeries.NewInstance()..", LogSeverity.Danger);
                 return null;
             }
         }

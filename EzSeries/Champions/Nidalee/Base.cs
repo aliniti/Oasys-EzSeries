@@ -33,21 +33,6 @@ namespace EzSeries.Champions.Nidalee
             Orbwalker.OnOrbwalkerAfterBasicAttack += (time, target) => _aa++;
         }
 
-        public static bool IsCatForm()
-        {
-            return MyHero.GetSpellBook().GetSpellClass(SpellSlot.Q).SpellData.SpellName == "Takedown";
-        }
-
-        public static bool IsHunted(AIBaseClient unit)
-        {
-            return unit.BuffManager.HasActiveBuff("NidaleePassiveHunted");
-        }
-
-        public static bool HasPrimalSurge()
-        {
-            return MyHero.BuffManager.HasActiveBuff("Primalsurge");
-        }
-        
         public static bool JavelinIsReady(int time = 1)
         {
             return _hq < time;
@@ -86,6 +71,21 @@ namespace EzSeries.Champions.Nidalee
         public static bool AutoAttackCount(int count = 1)
         {
             return _aa >= count;
+        }
+        
+        public static bool IsCatForm()
+        {
+            return MyHero.GetSpellBook().GetSpellClass(SpellSlot.Q).SpellData.SpellName == "Takedown";
+        }
+        
+        public static bool IsHunted(AIBaseClient unit)
+        {
+            return unit.BuffManager.HasActiveBuff("NidaleePassiveHunted");
+        }
+
+        public static bool HasPrimalSurge()
+        {
+            return MyHero.BuffManager.HasActiveBuff("Primalsurge");
         }
 
         private static async Task OnUpdate()
@@ -145,6 +145,8 @@ namespace EzSeries.Champions.Nidalee
 
         private static async Task OnCreateObject(List<AIBaseClient> unitList, AIBaseClient unit, float time)
         {
+            if (!unit.IsMe) return;
+            
             if (unit.Name.Contains("Nidalee") && unit.Name.Contains("R_Cas"))
             {
                 _aa = 0;
@@ -171,7 +173,7 @@ namespace EzSeries.Champions.Nidalee
 
             if (spell.IsBasicAttack)
             {
-                if (MyHero.BuffManager.HasBuff("Takedown") && _cq < 1)
+                if (MyHero.BuffManager.HasBuff("Takedown") && TakedownIsReady())
                 {
                     var cd = 6 * (100 / (100 + MyHero.UnitStats.AbilityHaste));
                     Ticks["Takedown"] = GameEngine.GameTime + cd;

@@ -59,19 +59,15 @@ namespace EzSeries.Models
             {
                 return false;
             }
-                
-            if (pred.HitChance >= minimum)
+
+            if (pred.HitChance < minimum) return false;
+            if (Environment.TickCount - _casted <= 100)
             {
-                if (Environment.TickCount - _casted <= 100)
-                {
-                    return false;
-                }
-                    
-                _casted = Environment.TickCount;
-                return SpellCastProvider.CastSpell(_slot, pred.CastPosition);
+                return false;
             }
-                
-            return false;
+                    
+            _casted = Environment.TickCount;
+            return SpellCastProvider.CastSpell(_slot, pred.CastPosition);
 
         }
 
