@@ -6,23 +6,22 @@ namespace EzSeries.Champions.Nidalee
     using Oasys.Common.Extensions;
     using Oasys.Common.GameObject.Clients;
     using Oasys.Common.Logic;
-
     using Oasys.SDK;
     using Oasys.SDK.SpellCasting;
-    using TargetSelector = Oasys.SDK.TargetSelector;
+    using MH = ModuleHelper;
 
     public class Module : Champion
     {
         private static AIHeroClient MyHero => UnitManager.MyChampion;
-        private static Spell _javelin;
+        private static Spell Javelin;
         
         protected override void OnLoad()
         {
-            Base.Initialize();
+            MH.Initialize();
             Menu.Initialize(Config);
 
-            _javelin = new Spell(CastSlot.Q, 1500);
-            _javelin.SetSkillShot(1500, Prediction.MenuSelected.PredictionType.Line, 0.25f, 1300, 80, true);
+            Javelin = new Spell(CastSlot.Q, 1500);
+            Javelin.SetSkillShot(1500, Prediction.MenuSelected.PredictionType.Line, 0.25f, 1300, 80, true);
         }
 
         public override async Task OnGameUpdate() { }
@@ -31,7 +30,7 @@ namespace EzSeries.Champions.Nidalee
         {
             CastPrimalSurge(OrbwalkingMode.Combo);
             
-            foreach (var t in UnitManager.EnemyChampions.Where(TargetSelector.IsAttackable).OrderBy(x => x.Health))
+            foreach (var t in UnitManager.EnemyChampions.Where(Oasys.SDK.TargetSelector.IsAttackable).OrderBy(x => x.Health))
             {
                 CastSpear(t);
                 CastBushwhack(t);
@@ -47,7 +46,7 @@ namespace EzSeries.Champions.Nidalee
         {
             CastPrimalSurge(OrbwalkingMode.Mixed);
             
-            foreach (var t in UnitManager.EnemyChampions.Where(TargetSelector.IsAttackable).OrderBy(x => x.Health))
+            foreach (var t in UnitManager.EnemyChampions.Where(Oasys.SDK.TargetSelector.IsAttackable).OrderBy(x => x.Health))
             {
                 CastSpear(t);
                 SwitchHumanToCat(t, OrbwalkingMode.Combo);
@@ -61,7 +60,7 @@ namespace EzSeries.Champions.Nidalee
         {            
             CastPrimalSurge(OrbwalkingMode.LaneClear);
             
-            foreach (var t in UnitManager.EnemyMinions.Where(TargetSelector.IsAttackable).OrderBy(x => x.Health))
+            foreach (var t in UnitManager.EnemyJungleMobs.Where(Oasys.SDK.TargetSelector.IsAttackable).OrderBy(x => x.Health))
             {
                 CastSpear(t);
                 CastBushwhack(t);
@@ -75,22 +74,22 @@ namespace EzSeries.Champions.Nidalee
 
         private static void CastSpear(AIBaseClient? unit)
         {
-            if (unit == null || Base.IsCatForm()) return;
+            if (unit == null || MH.IsCatForm()) return;
 
-            if (unit.IsValidTarget() && Base.JavelinIsReady())
+            if (unit.IsValidTarget() && MH.JavelinIsReady())
             {
                 if (unit.Distance(MyHero) <= 1500)
-                    _javelin.Cast(unit, Menu.GetHitChance());
+                    Javelin.Cast(unit, Menu.GetHitChance());
             }
         }
 
         private static void CastBushwhack(AIBaseClient? unit)
         {
-            if (unit == null || Base.IsCatForm()) return;
+            if (unit == null || MH.IsCatForm()) return;
 
-            if (unit.IsValidTarget() && Base.BushwhackIsReady())
+            if (unit.IsValidTarget() && MH.BushwhackIsReady())
             {
-                if (unit.Distance(MyHero) <= 900 && !Base.IsHunted(unit))
+                if (unit.Distance(MyHero) <= 900 && !MH.IsHunted(unit))
                     SpellCastProvider.CastSpell(CastSlot.W, unit.Position);
             }
         }
@@ -111,23 +110,23 @@ namespace EzSeries.Champions.Nidalee
                         {
                             case OrbwalkingMode.LaneClear:
                                 if (myMana > 35 && health <= Menu.AutoHealAllyPct(unit))
-                                    if (!Base.IsCatForm() && Base.PrimalSurgeIsReady())
+                                    if (!MH.IsCatForm() && MH.PrimalSurgeIsReady())
                                         SpellCastProvider.CastSpell(CastSlot.E, MyHero.Position);
-                                if (Base.IsCatForm() && Menu.ChangeForms() && Base.AspectOfCougarReady() && Base.PrimalSurgeIsReady())
+                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.PrimalSurgeIsReady())
                                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                                 break;
                             case OrbwalkingMode.Combo:
                                 if (health <= Menu.AutoHealAllyPct(unit))
-                                    if (!Base.IsCatForm() && Base.PrimalSurgeIsReady())
+                                    if (!MH.IsCatForm() && MH.PrimalSurgeIsReady())
                                         SpellCastProvider.CastSpell(CastSlot.E, MyHero.Position);
-                                if (Base.IsCatForm() && Menu.ChangeForms() && Base.AspectOfCougarReady() && Base.PrimalSurgeIsReady())
+                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.PrimalSurgeIsReady())
                                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                                 break;
                             case OrbwalkingMode.Mixed:
                                 if (myMana > 65 && health <= Menu.AutoHealAllyPct(unit))
-                                    if (!Base.IsCatForm() && Base.PrimalSurgeIsReady())
+                                    if (!MH.IsCatForm() && MH.PrimalSurgeIsReady())
                                         SpellCastProvider.CastSpell(CastSlot.E, MyHero.Position);
-                                if (Base.IsCatForm() && Menu.ChangeForms() && Base.AspectOfCougarReady() && Base.PrimalSurgeIsReady())
+                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.PrimalSurgeIsReady())
                                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                                 break;
                         }
@@ -141,9 +140,9 @@ namespace EzSeries.Champions.Nidalee
         private static void CastTakedown(AIBaseClient? unit)
         {
             if (MyHero.BuffManager.HasActiveBuff("Takedown")) return;
-            if (unit == null || !Base.IsCatForm()) return;
+            if (unit == null || !MH.IsCatForm()) return;
 
-            if (unit.IsValidTarget() && Base.TakedownIsReady())
+            if (unit.IsValidTarget() && MH.TakedownIsReady())
             {
                 if (unit.Distance(MyHero) <= 300)
                     SpellCastProvider.CastSpell(CastSlot.Q, MyHero.Position);
@@ -154,9 +153,9 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || !unit.IsValidTarget()) return;
 
-            if (Base.IsCatForm() && Base.PounceIsReady())
+            if (MH.IsCatForm() && MH.PounceIsReady())
             {
-                if (Base.IsHunted(unit) && unit.Distance(MyHero) <= 750)
+                if (MH.IsHunted(unit) && unit.Distance(MyHero) <= 750)
                     SpellCastProvider.CastSpell(CastSlot.W, unit.Position);
 
                 if (unit.Distance(MyHero) <= 375)
@@ -168,7 +167,7 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || !unit.IsValidTarget()) return;
 
-            if (Base.IsCatForm() && Base.SwipeIsReady())
+            if (MH.IsCatForm() && MH.SwipeIsReady())
             {
                 if (unit.Distance(MyHero) <= 300)
                     SpellCastProvider.CastSpell(CastSlot.E, unit.Position);
@@ -179,16 +178,16 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || !unit.IsValidTarget() || !Menu.ChangeForms()) return;
 
-            if (Base.IsCatForm() && Base.AspectOfCougarReady())
+            if (MH.IsCatForm() && MH.AspectOfCougarReady())
             {
-                if (Base.JavelinIsReady() && (!Base.PounceIsReady(3) || unit.Distance(MyHero) > 375))
+                if (MH.JavelinIsReady() && (!MH.PounceIsReady(3) || unit.Distance(MyHero) > 375))
                 {
-                    var pOutput = _javelin.GetPrediction(unit);
+                    var pOutput = Javelin.GetPrediction(unit);
                     if (pOutput.HitChance >= Menu.GetHitChance())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
 
-                if (!Base.TakedownIsReady() && !Base.PounceIsReady() && !Base.SwipeIsReady())
+                if (!MH.TakedownIsReady() && !MH.PounceIsReady() && !MH.SwipeIsReady())
                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
             }
         }
@@ -196,13 +195,13 @@ namespace EzSeries.Champions.Nidalee
         private static void SwitchHumanToCat(AIBaseClient? unit, OrbwalkingMode mode)
         {
             if (unit == null || !unit.IsValidTarget() || !Menu.ChangeForms()) return;
-            if (Base.IsCatForm() || !Base.AspectOfCougarReady()) return;
+            if (MH.IsCatForm() || !MH.AspectOfCougarReady()) return;
             
-            if (Base.IsHunted(unit) && Base.PounceIsReady() && unit.Distance(MyHero) <= 750)
+            if (MH.IsHunted(unit) && MH.PounceIsReady() && unit.Distance(MyHero) <= 750)
             {
                 if (mode != OrbwalkingMode.LaneClear)
                 {
-                    if (Base.TakedownIsReady() || Base.SwipeIsReady())
+                    if (MH.TakedownIsReady() || MH.SwipeIsReady())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
                 else
@@ -210,49 +209,49 @@ namespace EzSeries.Champions.Nidalee
                     if (Menu.SafeToFastClear() || !Menu.RequireMinAutoAttacks())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
 
-                    if (Base.HasPrimalSurge() && Base.AutoAttackCount(Menu.ClearMinAttacksWithHeal())
-                        || Base.AutoAttackCount(Menu.ClearMinAttacks()))
+                    if (MH.HasPrimalSurge() && MH.AutoAttackCount(Menu.ClearMinAttacksWithHeal())
+                        || MH.AutoAttackCount(Menu.ClearMinAttacks()))
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
             }
             
-            if (Base.PounceIsReady() && unit.Distance(MyHero) <= 375)
+            if (MH.PounceIsReady() && unit.Distance(MyHero) <= 375)
             {
                 if (mode != OrbwalkingMode.LaneClear)
                 {
-                    if (Base.JavelinIsReady())
+                    if (MH.JavelinIsReady())
                     {
-                        var pOutput = _javelin.GetPrediction(unit);
+                        var pOutput = Javelin.GetPrediction(unit);
                         if (pOutput.CollisionObjects.Count > 0 || pOutput.HitChance < Menu.GetHitChance())
                             SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                     }
                     else
                     {
-                        if (Base.TakedownIsReady() || Base.SwipeIsReady())
+                        if (MH.TakedownIsReady() || MH.SwipeIsReady())
                             SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                     }
                 }
                 else
                 {
-                    if (!Base.JavelinIsReady() && !Base.BushwhackIsReady())
+                    if (!MH.JavelinIsReady() && !MH.BushwhackIsReady())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
             }
             
-            if (Base.TakedownIsReady() && unit.Distance(MyHero) <= 300)
+            if (MH.TakedownIsReady() && unit.Distance(MyHero) <= 300)
             {
                 if (mode == OrbwalkingMode.LaneClear)
                 {
                     if (Menu.SafeToFastClear() || !Menu.RequireMinAutoAttacks())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
 
-                    if (Base.HasPrimalSurge() && Base.AutoAttackCount(Menu.ClearMinAttacksWithHeal())
-                        || Base.AutoAttackCount(Menu.ClearMinAttacks()))
+                    if (MH.HasPrimalSurge() && MH.AutoAttackCount(Menu.ClearMinAttacksWithHeal())
+                        || MH.AutoAttackCount(Menu.ClearMinAttacks()))
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
                 else
                 {
-                    if (Base.TakedownIsReady() || Base.SwipeIsReady())
+                    if (MH.TakedownIsReady() || MH.SwipeIsReady())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
             }

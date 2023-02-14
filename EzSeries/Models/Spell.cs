@@ -1,7 +1,9 @@
 namespace EzSeries.Models
 {
     using Helpers;
+    using Oasys.Common.Enums.GameEnums;
     using Oasys.Common.GameObject.Clients;
+    using Oasys.Common.GameObject.Clients.ExtendedInstances.Spells;
     using Oasys.SDK;
     using Oasys.SDK.SpellCasting;
     using SharpDX;
@@ -91,6 +93,11 @@ namespace EzSeries.Models
 
             _casted = Environment.TickCount;
             return SpellCastProvider.CastSpell(_slot, unit.Position);
+        }
+
+        public SpellClass GetSpellClass()
+        {
+            return UnitManager.MyChampion.GetSpellBook().GetSpellClass((SpellSlot) this._slot - 16);
         }
         
         public Prediction.MenuSelected.PredictionOutput GetPrediction(AIBaseClient unit)

@@ -6,7 +6,7 @@ namespace EzSeries.Champions.Nidalee
     using Oasys.Common.GameObject.Clients.ExtendedInstances.Spells;
     using Oasys.SDK;
 
-    public abstract class Base
+    public abstract class ModuleHelper
     {
         private static AIHeroClient MyHero => UnitManager.MyChampion;
         private static readonly Dictionary<string, float> Ticks = new();
@@ -173,7 +173,7 @@ namespace EzSeries.Champions.Nidalee
 
             if (spell.IsBasicAttack)
             {
-                if (MyHero.BuffManager.HasBuff("Takedown") && TakedownIsReady())
+                if (MyHero.BuffManager.HasBuff("Takedown"))
                 {
                     var cd = 6 * (100 / (100 + MyHero.UnitStats.AbilityHaste));
                     Ticks["Takedown"] = GameEngine.GameTime + cd;

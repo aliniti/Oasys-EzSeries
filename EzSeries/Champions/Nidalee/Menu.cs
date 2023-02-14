@@ -33,7 +33,7 @@ namespace EzSeries.Champions.Nidalee
             _clear.AddItem(new Counter("Min auto attacks", 2, 1, 5));
             _clear.AddItem(new Counter("Min auto attacks w/ heal", 4, 1, 5));
             _clear.AddItem(new Counter("Fast clear at/after lvl", 11, 1, 17));
-            _clear.AddItem(new Switch("Experimental wave clear", false) );
+            //_clear.AddItem(new Switch("Experimental wave clear", false) );
             _config.AddGroup(_clear);
             
             _draw = new Group("Drawings");

@@ -31,13 +31,13 @@ namespace EzSeries.Models
         ///     Initializes the champion module.
         /// </summary>
         private void InitializeChampion()
-        {
+        { 
             var v = "EzSeries.Champions." + UnitManager.MyChampion.ModelName;
 
             switch (_initialized)
             {
                 case false when string.Equals(this.GetType().Namespace, v, StringComparison.CurrentCultureIgnoreCase):
-                    ChampionDisplay = new InfoDisplay { Title = "EzSeries: " + this.GetType().Name };
+                    ChampionDisplay = new InfoDisplay { Title = UnitManager.MyChampion.ModelName };
                     Config.AddItem(ChampionDisplay);
 
                     OnLoad();
@@ -46,7 +46,7 @@ namespace EzSeries.Models
                     _disposed = false;
                     _initialized = true;
                     
-                    Logger.Log("Initialized " + this.GetType().Name.ToLower() + " plugin!", LogSeverity.Warning);
+                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName.ToLower() + " plugin!", LogSeverity.Warning);
                     break;
                 case false:
                     DisposeChampion();
@@ -66,8 +66,7 @@ namespace EzSeries.Models
 
                     _disposed = true;
                     _initialized = false;
-                    
-                    Logger.Log("Champion " + this.GetType().Name.ToLower() + " not supported!", LogSeverity.Warning);
+                    Logger.Log("Couldn't load " + this.GetType().Name.ToLower() + " module.", LogSeverity.Warning);
                     break;
             }
         }
