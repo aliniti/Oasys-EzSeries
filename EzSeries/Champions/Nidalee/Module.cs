@@ -76,7 +76,7 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || MH.IsCatForm()) return;
 
-            if (unit.IsValidTarget() && MH.JavelinIsReady())
+            if (unit.IsValidTarget() && MH.JavelinReady())
             {
                 if (unit.Distance(MyHero) <= 1500)
                     Javelin.Cast(unit, Menu.GetHitChance());
@@ -87,7 +87,7 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || MH.IsCatForm()) return;
 
-            if (unit.IsValidTarget() && MH.BushwhackIsReady())
+            if (unit.IsValidTarget() && MH.BushwhackReady())
             {
                 if (unit.Distance(MyHero) <= 900 && !MH.IsHunted(unit))
                     SpellCastProvider.CastSpell(CastSlot.W, unit.Position);
@@ -110,23 +110,23 @@ namespace EzSeries.Champions.Nidalee
                         {
                             case OrbwalkingMode.LaneClear:
                                 if (myMana > 35 && health <= Menu.AutoHealAllyPct(unit))
-                                    if (!MH.IsCatForm() && MH.PrimalSurgeIsReady())
+                                    if (!MH.IsCatForm() && MH.HealReady())
                                         SpellCastProvider.CastSpell(CastSlot.E, MyHero.Position);
-                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.PrimalSurgeIsReady())
+                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.HealReady())
                                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                                 break;
                             case OrbwalkingMode.Combo:
                                 if (health <= Menu.AutoHealAllyPct(unit))
-                                    if (!MH.IsCatForm() && MH.PrimalSurgeIsReady())
+                                    if (!MH.IsCatForm() && MH.HealReady())
                                         SpellCastProvider.CastSpell(CastSlot.E, MyHero.Position);
-                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.PrimalSurgeIsReady())
+                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.HealReady())
                                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                                 break;
                             case OrbwalkingMode.Mixed:
                                 if (myMana > 65 && health <= Menu.AutoHealAllyPct(unit))
-                                    if (!MH.IsCatForm() && MH.PrimalSurgeIsReady())
+                                    if (!MH.IsCatForm() && MH.HealReady())
                                         SpellCastProvider.CastSpell(CastSlot.E, MyHero.Position);
-                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.PrimalSurgeIsReady())
+                                if (MH.IsCatForm() && Menu.ChangeForms() && MH.AspectOfCougarReady() && MH.HealReady())
                                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                                 break;
                         }
@@ -142,7 +142,7 @@ namespace EzSeries.Champions.Nidalee
             if (MyHero.BuffManager.HasActiveBuff("Takedown")) return;
             if (unit == null || !MH.IsCatForm()) return;
 
-            if (unit.IsValidTarget() && MH.TakedownIsReady())
+            if (unit.IsValidTarget() && MH.TakedownReady())
             {
                 if (unit.Distance(MyHero) <= 300)
                     SpellCastProvider.CastSpell(CastSlot.Q, MyHero.Position);
@@ -153,7 +153,7 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || !unit.IsValidTarget()) return;
 
-            if (MH.IsCatForm() && MH.PounceIsReady())
+            if (MH.IsCatForm() && MH.PounceReady())
             {
                 if (MH.IsHunted(unit) && unit.Distance(MyHero) <= 750)
                     SpellCastProvider.CastSpell(CastSlot.W, unit.Position);
@@ -167,7 +167,7 @@ namespace EzSeries.Champions.Nidalee
         {
             if (unit == null || !unit.IsValidTarget()) return;
 
-            if (MH.IsCatForm() && MH.SwipeIsReady())
+            if (MH.IsCatForm() && MH.SwipeReady())
             {
                 if (unit.Distance(MyHero) <= 300)
                     SpellCastProvider.CastSpell(CastSlot.E, unit.Position);
@@ -180,14 +180,14 @@ namespace EzSeries.Champions.Nidalee
 
             if (MH.IsCatForm() && MH.AspectOfCougarReady())
             {
-                if (MH.JavelinIsReady() && (!MH.PounceIsReady(3) || unit.Distance(MyHero) > 375))
+                if (MH.JavelinReady() && (!MH.PounceReady(3) || unit.Distance(MyHero) > 375))
                 {
                     var pOutput = Javelin.GetPrediction(unit);
                     if (pOutput.HitChance >= Menu.GetHitChance())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
 
-                if (!MH.TakedownIsReady() && !MH.PounceIsReady() && !MH.SwipeIsReady())
+                if (!MH.TakedownReady() && !MH.PounceReady() && !MH.SwipeReady())
                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
             }
         }
@@ -197,11 +197,11 @@ namespace EzSeries.Champions.Nidalee
             if (unit == null || !unit.IsValidTarget() || !Menu.ChangeForms()) return;
             if (MH.IsCatForm() || !MH.AspectOfCougarReady()) return;
             
-            if (MH.IsHunted(unit) && MH.PounceIsReady() && unit.Distance(MyHero) <= 750)
+            if (MH.IsHunted(unit) && MH.PounceReady() && unit.Distance(MyHero) <= 750)
             {
                 if (mode != OrbwalkingMode.LaneClear)
                 {
-                    if (MH.TakedownIsReady() || MH.SwipeIsReady())
+                    if (MH.TakedownReady() || MH.SwipeReady())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
                 else
@@ -215,11 +215,11 @@ namespace EzSeries.Champions.Nidalee
                 }
             }
             
-            if (MH.PounceIsReady() && unit.Distance(MyHero) <= 375)
+            if (MH.PounceReady() && unit.Distance(MyHero) <= 375)
             {
                 if (mode != OrbwalkingMode.LaneClear)
                 {
-                    if (MH.JavelinIsReady())
+                    if (MH.JavelinReady())
                     {
                         var pOutput = Javelin.GetPrediction(unit);
                         if (pOutput.CollisionObjects.Count > 0 || pOutput.HitChance < Menu.GetHitChance())
@@ -227,18 +227,18 @@ namespace EzSeries.Champions.Nidalee
                     }
                     else
                     {
-                        if (MH.TakedownIsReady() || MH.SwipeIsReady())
+                        if (MH.TakedownReady() || MH.SwipeReady())
                             SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                     }
                 }
                 else
                 {
-                    if (!MH.JavelinIsReady() && !MH.BushwhackIsReady())
+                    if (!MH.JavelinReady() && !MH.BushwhackReady())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
             }
             
-            if (MH.TakedownIsReady() && unit.Distance(MyHero) <= 300)
+            if (MH.TakedownReady() && unit.Distance(MyHero) <= 300)
             {
                 if (mode == OrbwalkingMode.LaneClear)
                 {
@@ -251,7 +251,7 @@ namespace EzSeries.Champions.Nidalee
                 }
                 else
                 {
-                    if (MH.TakedownIsReady() || MH.SwipeIsReady())
+                    if (MH.TakedownReady() || MH.SwipeReady())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
             }

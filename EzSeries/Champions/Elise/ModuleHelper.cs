@@ -5,7 +5,6 @@ namespace EzSeries.Champions.Elise
     using Oasys.Common.GameObject.Clients;
     using Oasys.Common.GameObject.Clients.ExtendedInstances.Spells;
     using Oasys.SDK;
-    using Oasys.SDK.Tools;
 
     public abstract class ModuleHelper
     {
@@ -16,6 +15,8 @@ namespace EzSeries.Champions.Elise
         private static float _r;
         private static float _sq, _sw, _se;
         private static float _hq, _hw, _he;
+        
+        private static SpellClass QSpellClass => Me.GetSpellBook().GetSpellClass(SpellSlot.Q);
 
         public static void Initialize()
         {
@@ -32,120 +33,59 @@ namespace EzSeries.Champions.Elise
             GameEvents.OnGameProcessSpell += OnProcessSpell;
         }
         
-        public static bool NeurotoxinReady(int time = 1)
-        {
-            return _hq < time;
-        }
-        
-        public static bool VolatileReady(int time = 1)
-        {
-            return _hw < time;
-        }
-        
-        public static bool CocoonReady(int time = 1)
-        {
-            return _he < time;
-        }
-        
-        public static float CocoonTimer()
-        {
-            return _he;
-        }
-
-        public static bool VenomousBiteReady(int time = 1)
-        {
-            return _sq < time;
-        }
-        
-        public static bool SkitteringFrenzyReady(int time = 1)
-        {
-            return _sw < time;
-        }
-        
-        public static bool RappelReady(int time = 1)
-        {
-            return _se < time;
-        }
-        
-        public static bool TransformReady(int time = 1)
-        {
-            return _r < time;
-        }
+        public static float CocoonTimer(int time = 1) => _he;
+        public static bool NeurotoxinReady(int time = 1) => _hq < time;
+        public static bool VolatileReady(int time = 1) => _hw < time;
+        public static bool CocoonReady(int time = 1) => _he < time;
+        public static bool VenomousBiteReady(int time = 1) => _sq < time;
+        public static bool SkitteringFrenzyReady(int time = 1) => _sw < time;
+        public static bool RappelReady(int time = 1) => _se < time;
+        public static bool TransformReady(int time = 1) => _r < time;
+        public static bool CocoonStunned(AIBaseClient unit) => unit.BuffManager.HasActiveBuff("Cocoon");
+        public static bool IsSpiderForm() => QSpellClass.SpellData.SpellName == "EliseSpiderQCast";
         
         public static int Spiderlings()
         {
             var b  = Me.BuffManager.GetActiveBuff("elisespiderlingsready");
-            if (b != null && b.IsActive)
-            {
-                return (int) b.Stacks;
-            }
-
-            return 0;
-        }
-        
-        public static bool CocoonStunned(AIBaseClient unit)
-        {
-            return unit.BuffManager.HasActiveBuff("Cocoon");
+            return b != null && b.IsActive ? (int) b.Stacks : 0;
         }
 
-        public static bool IsSpiderForm()
-        {
-            return Me.GetSpellBook().GetSpellClass(SpellSlot.Q).SpellData.SpellName == "EliseSpiderQCast";
-        }
-        
         private static async Task OnCoreMainTick()
         {
-            if (Me.GetSpellBook().GetSpellClass(SpellSlot.Q).Level >= 1)
-            {
-                // if spider q == 0 then ready
-                _sq = Ticks["VenomousBite"] - GameEngine.GameTime > 0 ? Ticks["VenomousBite"] - GameEngine.GameTime : 0;
+            // if spider q == 0 then ready
+            _sq = Me.GetSpellBook().GetSpellClass(SpellSlot.Q).Level >= 1 
+                ? Ticks["VenomousBite"] - GameEngine.GameTime > 0 ? Ticks["VenomousBite"] - GameEngine.GameTime : 0 
+                : 99;
 
-                // if human q == 0 then ready
-                _hq = Ticks["Neurotoxin"] - GameEngine.GameTime > 0 ? Ticks["Neurotoxin"] - GameEngine.GameTime : 0;
-            }
-            else
-            {
-                _sq = 99;
-                _hq = 99;
-            }
+            // if human q == 0 then ready
+            _hq = Me.GetSpellBook().GetSpellClass(SpellSlot.Q).Level >= 1 
+                ? Ticks["Neurotoxin"] - GameEngine.GameTime > 0 ? Ticks["Neurotoxin"] - GameEngine.GameTime : 0 
+                : 99;
 
-            if (Me.GetSpellBook().GetSpellClass(SpellSlot.W).Level >= 1)
-            {
-                // if spider w == 0 then ready
-                _sw = Ticks["SkitteringFrenzy"] - GameEngine.GameTime > 0 ? Ticks["SkitteringFrenzy"] - GameEngine.GameTime : 0;
+            // if spider w == 0 then ready
+            _sw = Me.GetSpellBook().GetSpellClass(SpellSlot.W).Level >= 1
+                ? Ticks["SkitteringFrenzy"] - GameEngine.GameTime > 0 ? Ticks["SkitteringFrenzy"] - GameEngine.GameTime : 0
+                : 99;
 
-                // if human w == 0 then ready
-                _hw = Ticks["Volatile"] - GameEngine.GameTime > 0 ? Ticks["Volatile"] - GameEngine.GameTime : 0;
-            }
-            else
-            {
-                _sw = 99;
-                _hw = 99;
-            }
+            // if human w == 0 then ready
+            _hw = Me.GetSpellBook().GetSpellClass(SpellSlot.W).Level >= 1 
+                ? Ticks["Volatile"] - GameEngine.GameTime > 0 ? Ticks["Volatile"] - GameEngine.GameTime : 0 
+                : 99;
 
-            if (Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level >= 1)
-            {
-                // if spider e == 0 then ready
-                _se = Ticks["Rappel"] - GameEngine.GameTime > 0 ? Ticks["Rappel"] - GameEngine.GameTime : 0;
+            // if human e == 0 then ready
+            _he = Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level >= 1 
+                ? Ticks["Cocoon"] - GameEngine.GameTime > 0 ? Ticks["Cocoon"] - GameEngine.GameTime : 0 
+                : 99;
 
-                // if human e == 0 then ready
-                _he = Ticks["Cocoon"] - GameEngine.GameTime > 0 ? Ticks["Cocoon"] - GameEngine.GameTime : 0;
-            }
-            else
-            {
-                _se = 99;
-                _he = 99;
-            }
-            
-            if (Me.GetSpellBook().GetSpellClass(SpellSlot.R).Level >= 1)
-            {
-                // if elise r == 0 then ready
-                _r = Ticks["Transform"] - GameEngine.GameTime > 0 ? Ticks["Transform"] - GameEngine.GameTime : 0;
-            }
-            else
-            {
-                _r = 99;
-            }
+            // if spider e == 0 then ready
+            _se = Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level >= 1 
+                ? Ticks["Rappel"] - GameEngine.GameTime > 0 ? Ticks["Rappel"] - GameEngine.GameTime : 0 
+                : 99;
+
+            // if elise r == 0 then ready
+            _r = Me.GetSpellBook().GetSpellClass(SpellSlot.R).Level >= 1 
+                ? Ticks["Transform"] - GameEngine.GameTime > 0 ? Ticks["Transform"] - GameEngine.GameTime : 0 
+                : 99;
         }
         
         private static async Task OnCreateObject(List<AIBaseClient> unitList, AIBaseClient unit, float time)
@@ -175,28 +115,32 @@ namespace EzSeries.Champions.Elise
         {
             if (!unit.IsMe) return;
 
-            if (spell.SpellData.SpellName == "EliseHumanQ")
+            switch (spell.SpellData.SpellName)
             {
-                var cd = 6 * (100 / (100 + Me.UnitStats.AbilityHaste));
-                Ticks["Neurotoxin"] = GameEngine.GameTime + cd;
-            }
-            
-            if (spell.SpellData.SpellName == "EliseHumanW")
-            {
-                var cd = 12 * (100 / (100 + Me.UnitStats.AbilityHaste));
-                Ticks["Volatile"] = GameEngine.GameTime + cd;
-            }
-            
-            if (spell.SpellData.SpellName == "EliseHumanE")
-            {
-                var cd = new [] { 12, 11.5, 11, 10.5, 10 }[Math.Max(0, Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level - 1)];
-                Ticks["Cocoon"] = (float) (GameEngine.GameTime + cd);
-            }
-            
-            if (spell.SpellData.SpellName == "EliseSpiderQCast")
-            {
-                var cd = 6 * (100 / (100 + Me.UnitStats.AbilityHaste));
-                Ticks["VenomousBite"] = GameEngine.GameTime + cd;
+                case "EliseHumanQ":
+                {
+                    var cd = 6 * (100 / (100 + Me.UnitStats.AbilityHaste));
+                    Ticks["Neurotoxin"] = GameEngine.GameTime + cd;
+                    break;
+                }
+                case "EliseHumanW":
+                {
+                    var cd = 12 * (100 / (100 + Me.UnitStats.AbilityHaste));
+                    Ticks["Volatile"] = GameEngine.GameTime + cd;
+                    break;
+                }
+                case "EliseHumanE":
+                {
+                    var cd = new [] { 12, 11.5, 11, 10.5, 10 } [Math.Max(0, Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level - 1)];
+                    Ticks["Cocoon"] = (float) (GameEngine.GameTime + cd);
+                    break;
+                }
+                case "EliseSpiderQCast":
+                {
+                    var cd = 6 * (100 / (100 + Me.UnitStats.AbilityHaste));
+                    Ticks["VenomousBite"] = GameEngine.GameTime + cd;
+                    break;
+                }
             }
         }
     }

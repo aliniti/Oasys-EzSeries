@@ -40,6 +40,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Champions\Jayce" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files\J6351825030155836664876686dcff61b6a91254a0458537072a1b26ad151b5cejb\Modules\$(ProjectName).omod&quot; /Y&#xA;&#xA;echo F | xcopy &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Users\robin\Documents\GitHub\Oasys-EzSeries\$(ProjectName).omod&quot; /Y" />
   </Target>
