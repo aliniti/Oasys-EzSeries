@@ -46,7 +46,7 @@ namespace EzSeries.Models
                     _disposed = false;
                     _initialized = true;
                     
-                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName.ToLower() + " plugin!", LogSeverity.Warning);
+                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName + " plugin!", LogSeverity.Warning);
                     break;
                 case false:
                     DisposeChampion();
@@ -66,7 +66,7 @@ namespace EzSeries.Models
 
                     _disposed = true;
                     _initialized = false;
-                    Logger.Log("Couldn't load " + this.GetType().Name.ToLower() + " module.", LogSeverity.Warning);
+                    //Logger.Log("Couldn't load " + this.GetType().Namespace.ToLower(), LogSeverity.Warning);
                     break;
             }
         }
