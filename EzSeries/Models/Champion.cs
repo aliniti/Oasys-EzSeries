@@ -13,10 +13,9 @@ namespace EzSeries.Models
         // fields
         private bool _disposed;
         private bool _initialized;
-
-        protected Tab Config { get; set; } = null!;
-        private InfoDisplay ChampionDisplay { get; set; } = null!;
         
+        protected Tab Config { get; set; }
+
         /// <summary>
         ///     The champion initializer
         /// </summary>
@@ -37,8 +36,6 @@ namespace EzSeries.Models
             switch (_initialized)
             {
                 case false when string.Equals(this.GetType().Namespace, v, StringComparison.CurrentCultureIgnoreCase):
-                    ChampionDisplay = new InfoDisplay { Title = UnitManager.MyChampion.ModelName };
-                    Config.AddItem(ChampionDisplay);
 
                     OnLoad();
                     OnChampionInitialize?.Invoke();

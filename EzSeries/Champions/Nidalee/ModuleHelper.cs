@@ -113,7 +113,7 @@ namespace EzSeries.Champions.Nidalee
         {
             if (!unit.IsMe) return;
 
-            if (spell.IsBasicAttack)
+            if (spell.SpellData.SpellName.Contains("attack"))
             {
                 if (Me.BuffManager.HasBuff("Takedown"))
                 {

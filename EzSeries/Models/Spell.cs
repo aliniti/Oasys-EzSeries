@@ -95,6 +95,11 @@ namespace EzSeries.Models
             return SpellCastProvider.CastSpell(_slot, unit.Position);
         }
 
+        public bool IsReady()
+        {
+            return this.GetSpellClass().IsSpellReady;
+        }
+
         public SpellClass GetSpellClass()
         {
             return UnitManager.MyChampion.GetSpellBook().GetSpellClass((SpellSlot) this._slot - 16);
