@@ -14,9 +14,9 @@
     <Authors>EzSeries</Authors>
     <Company>EzSeries</Company>
     <Product>EzSeries</Product>
-    <AssemblyVersion>1.6</AssemblyVersion>
-    <FileVersion>1.6</FileVersion>
-    <PackageVersion>1.5</PackageVersion>
+    <AssemblyVersion>1.6.1</AssemblyVersion>
+    <FileVersion>1.6.1</FileVersion>
+    <PackageVersion>1.6.1</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
