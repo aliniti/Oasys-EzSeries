@@ -81,7 +81,7 @@ namespace EzSeries.Champions.Nidalee
 
             // if aspect of cougar == 0 then ready
             _aoc = Me.GetSpellBook().GetSpellClass(SpellSlot.R).Level >= 1
-                ? Ticks["AspectofCougar"] - GameEngine.GameTime > 0 ? Ticks["AspectOfCougar"] - GameEngine.GameTime : 0
+                ? Ticks["AspectOfCougar"] - GameEngine.GameTime > 0 ? Ticks["AspectOfCougar"] - GameEngine.GameTime : 0
                 : 99;
         }
 
@@ -139,9 +139,8 @@ namespace EzSeries.Champions.Nidalee
                 }
                 case "Bushwhack":
                 {
-                    var cd = new [] { 13, 12, 11, 10, 9 } [Math.Max(0, Me.GetSpellBook().GetSpellClass(SpellSlot.W).Level - 1)]
-                             * (100 / (100 + Me.UnitStats.AbilityHaste));
-
+                    var lvl = Me.GetSpellBook().GetSpellClass(SpellSlot.W).Level;
+                    var cd = new [] { 13, 12, 11, 10, 9 } [Math.Max(0, lvl - 1)] * (100 / (100 + Me.UnitStats.AbilityHaste));
                     Ticks["Bushwhack"] = GameEngine.GameTime + cd;
                     break;
                 }
