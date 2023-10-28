@@ -41,9 +41,10 @@ namespace EzSeries.Champions.Elise
         public static bool SkitteringFrenzyReady(int time = 1) => _sw < time;
         public static bool RappelReady(int time = 1) => _se < time;
         public static bool TransformReady(int time = 1) => _r < time;
-        public static bool CocoonStunned(AIBaseClient unit) => unit.BuffManager.HasActiveBuff("Cocoon");
+        public static bool CocoonStunned(AIBaseClient unit) => unit.BuffManager.HasActiveBuff("EliseHumanE");
         public static bool IsSpiderForm() => QSpellClass.SpellData.SpellName == "EliseSpiderQCast";
-        
+        public static double CocoonTotal() => new [] { 12, 11.5, 11, 10.5, 10 } [Math.Max(0, Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level - 1)];
+
         public static int Spiderlings()
         {
             var b  = Me.BuffManager.GetActiveBuff("elisespiderlingsready");
@@ -104,7 +105,7 @@ namespace EzSeries.Champions.Elise
                 Ticks["SkitteringFrenzy"] = GameEngine.GameTime + cd;
             }
 
-            if (unit.Name.Contains("Elise") && unit.Name.Contains("spider_e_land"))
+            if (unit.Name.Contains("Elise") && unit.Name.Contains("E_land"))
             {
                 var cd = new [] { 12, 11.5, 11, 10.5, 10 } [Math.Max(0, Me.GetSpellBook().GetSpellClass(SpellSlot.E).Level - 1)];
                 Ticks["Rappel"] = (float) (GameEngine.GameTime + cd);
