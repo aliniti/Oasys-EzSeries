@@ -1,9 +1,8 @@
 namespace EzSeries.Models
 {
-    using Oasys.Common.Menu;
-    using Oasys.Common.Menu.ItemComponents;
     using Oasys.SDK;
     using Oasys.SDK.Tools;
+    using Oasys.Common.Menu;
 
     public delegate void OnChampionInitialize();
     public delegate void OnChampionDispose();
@@ -35,7 +34,7 @@ namespace EzSeries.Models
 
             switch (_initialized)
             {
-                case false when string.Equals(this.GetType().Namespace, v, StringComparison.CurrentCultureIgnoreCase):
+                case false when string.Equals(GetType().Namespace, v, StringComparison.CurrentCultureIgnoreCase):
 
                     OnLoad();
                     OnChampionInitialize?.Invoke();
@@ -43,7 +42,7 @@ namespace EzSeries.Models
                     _disposed = false;
                     _initialized = true;
                     
-                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName + " plugin!", LogSeverity.Warning);
+                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName + " plugin!");
                     break;
                 case false:
                     DisposeChampion();
@@ -63,7 +62,7 @@ namespace EzSeries.Models
 
                     _disposed = true;
                     _initialized = false;
-                    //Logger.Log("Couldn't load " + this.GetType().Namespace.ToLower(), LogSeverity.Warning);
+                    Logger.Log("Not Supported: " + UnitManager.MyChampion.ModelName, LogSeverity.Warning);
                     break;
             }
         }
