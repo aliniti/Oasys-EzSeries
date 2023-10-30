@@ -38,7 +38,7 @@ namespace EzSeries.Champions.Elise
 
         
         /// <summary>
-        ///     Overrides the base class method to execute Elise's combo spells on all attackable enemy champions.
+        ///     Overrides the base class method to execute Elise's combo spells on all attack-able enemy champions.
         /// </summary>
         public override async Task OnMainInput()
         {
@@ -56,7 +56,7 @@ namespace EzSeries.Champions.Elise
         }
 
         /// <summary>
-        ///     Overrides the base class method to execute Elise's harass spells on all attackable enemy champions.
+        ///     Overrides the base class method to execute Elise's harass spells on all attack-able enemy champions.
         /// </summary>
         public override async Task OnHarassInput()
         {
@@ -74,7 +74,7 @@ namespace EzSeries.Champions.Elise
         }
 
         /// <summary>
-        ///    Overrides the base class method to execute Elise's laneclear spells on all attackable enemy jungle mobs.
+        ///    Overrides the base class method to execute Elise's lane clear spells on all attack-able enemy jungle mobs.
         /// </summary>
         public override async Task OnLaneClearInput()
         {
