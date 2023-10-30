@@ -9,14 +9,14 @@ namespace EzSeries.Champions.Nidalee
     public abstract class Menu
     {
         private static Tab _config;
-        private static readonly string [] HitChanceList = { "Low", "Medium", "High", "Very High" };
+        private static readonly string [] HitChances = { "Low", "Medium", "High", "Very High" };
         private static Group _main, _clear, _draw, _misc;
         
         public static void Initialize(Tab parentTab)
         {
             _config = parentTab;
             _main = new Group("Main");
-            _main.AddItem(new ModeDisplay { Title = "Javelin HitChance", ModeNames = HitChanceList.ToList(), SelectedModeName = "High" });
+            _main.AddItem(new ModeDisplay { Title = "Javelin HitChance", ModeNames = HitChances.ToList(), SelectedModeName = "High" });
             _main.AddItem(new Switch("Auto change forms", true));
             _main.AddItem(new InfoDisplay { Information = "Auto heal allies" });
             

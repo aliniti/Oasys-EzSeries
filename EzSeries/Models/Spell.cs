@@ -31,9 +31,8 @@ namespace EzSeries.Models
             _range = range;
         }
 
-        public void SetSkillShot(float range, Prediction.MenuSelected.PredictionType type, float delay, float speed, float radius, bool collision)
+        public void SetSkillShot(float delay, float speed, float radius, bool collision, Prediction.MenuSelected.PredictionType type)
         {
-            _range = range;
             _type = type;
             _delay = delay;
             _speed = speed;
@@ -52,7 +51,7 @@ namespace EzSeries.Models
             return SpellCastProvider.CastSpell(_slot);
         }
 
-        public bool Cast(AIBaseClient unit, Prediction.MenuSelected.HitChance minimum)
+        public bool Cast(AIBaseClient? unit, Prediction.MenuSelected.HitChance minimum)
         {
             if (unit == null || !unit.IsValidTarget()) return false;
 
@@ -105,7 +104,7 @@ namespace EzSeries.Models
             return UnitManager.MyChampion.GetSpellBook().GetSpellClass((SpellSlot) this._slot - 16);
         }
         
-        public Prediction.MenuSelected.PredictionOutput GetPrediction(AIBaseClient unit)
+        public Prediction.MenuSelected.PredictionOutput GetPrediction(AIBaseClient? unit)
         {
             return Prediction.MenuSelected.GetPrediction(
                 _type, unit, _range, _radius, _delay, _speed, UnitManager.MyChampion.Position, _collision);

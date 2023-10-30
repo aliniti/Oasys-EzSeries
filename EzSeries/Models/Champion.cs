@@ -42,7 +42,7 @@ namespace EzSeries.Models
                     _disposed = false;
                     _initialized = true;
                     
-                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName + " plugin!");
+                    Logger.Log("Initialized " + UnitManager.MyChampion.ModelName + " plugin!", LogSeverity.Warning);
                     break;
                 case false:
                     DisposeChampion();
@@ -59,10 +59,9 @@ namespace EzSeries.Models
             {
                 case false:
                     OnChampionDispose?.Invoke();
-
+                    
                     _disposed = true;
                     _initialized = false;
-                    Logger.Log("Not Supported: " + UnitManager.MyChampion.ModelName, LogSeverity.Warning);
                     break;
             }
         }

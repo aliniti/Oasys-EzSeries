@@ -1,3 +1,4 @@
+#pragma warning disable CS8618
 namespace EzSeries.Champions.Elise
 {
     using Models;
@@ -16,7 +17,7 @@ namespace EzSeries.Champions.Elise
         // ░█▀▀░█░░░░█░░▀▀█░█▀▀
         // ░▀▀▀░▀▀▀░▀▀▀░▀▀▀░▀▀▀
         
-        private static Spell Cocoon;
+        private static Spell _cocoon;
         private static AIHeroClient MyHero => UnitManager.MyChampion;
 
         /// <summary>
@@ -27,8 +28,8 @@ namespace EzSeries.Champions.Elise
             MH.Initialize();
             Menu.Initialize(Config);
 
-            Cocoon = new Spell(CastSlot.E, 1100);
-            Cocoon.SetSkillShot(1100, Prediction.MenuSelected.PredictionType.Line, 0.25f, 1600, 110, true);
+            _cocoon = new Spell(CastSlot.E, 1100);
+            _cocoon.SetSkillShot(0.25f, 1600, 110, true, Prediction.MenuSelected.PredictionType.Line);
         }
 
         /// <summary>
@@ -101,7 +102,7 @@ namespace EzSeries.Champions.Elise
             
             var hasCocoon = MH.CocoonStunned(unit);
             var usedCocoon = MH.CocoonTimer() > MH.CocoonTotal() - 2;
-            var noCollision = Cocoon.GetPrediction(unit).CollisionObjects.Count < 1;
+            var noCollision = _cocoon.GetPrediction(unit).CollisionObjects.Count < 1;
 
             return hasCocoon || usedCocoon && noCollision;
         }
@@ -141,7 +142,7 @@ namespace EzSeries.Champions.Elise
 
             if (unit.IsValidTarget() && MH.CocoonReady())
                 if (unit.Distance(MyHero) <= 1100)
-                    Cocoon.Cast(unit, Menu.GetHitChance());
+                    _cocoon.Cast(unit, Menu.GetHitChance());
         }
         
         private static void VenomousBiteQ(AIBaseClient? unit)
@@ -201,7 +202,7 @@ namespace EzSeries.Champions.Elise
                 if (unit.Distance(MyHero) > 475 + MyHero.AttackRange + 35)
                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
 
-                if (MH.CocoonReady() && Cocoon.GetPrediction(unit).CollisionObjects.Count >= 1)
+                if (MH.CocoonReady() && _cocoon.GetPrediction(unit).CollisionObjects.Count >= 1)
                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
             }
         }
@@ -218,7 +219,7 @@ namespace EzSeries.Champions.Elise
             
             if (MH.CocoonReady() && (MH.NeurotoxinReady() || MH.VolatileReady()))
             {
-                var pOutput = Cocoon.GetPrediction(unit);
+                var pOutput = _cocoon.GetPrediction(unit);
                 if (pOutput.HitChance >= Menu.GetHitChance())
                     SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position); ;
             }

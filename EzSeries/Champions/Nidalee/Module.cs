@@ -16,7 +16,7 @@ namespace EzSeries.Champions.Nidalee
         // ░█░█░░█░░█░█░█▀█░█░░░█▀▀░█▀▀
         // ░▀░▀░▀▀▀░▀▀░░▀░▀░▀▀▀░▀▀▀░▀▀▀
 
-        private static Spell Javelin;
+        private static Spell _javelin;
         private static AIHeroClient MyHero => UnitManager.MyChampion;
         
         /// <summary>
@@ -27,8 +27,8 @@ namespace EzSeries.Champions.Nidalee
             MH.Initialize();
             Menu.Initialize(Config);
 
-            Javelin = new Spell(CastSlot.Q, 1500);
-            Javelin.SetSkillShot(1500, Prediction.MenuSelected.PredictionType.Line, 0.25f, 1300, 80, true);
+            _javelin = new Spell(CastSlot.Q, 1500);
+            _javelin.SetSkillShot(0.25f, 1300, 80, true, Prediction.MenuSelected.PredictionType.Line);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace EzSeries.Champions.Nidalee
 
             if (unit.IsValidTarget() && MH.JavelinReady())
                 if (unit.Distance(MyHero) <= 1500)
-                    Javelin.Cast(unit, Menu.GetHitChance());
+                    _javelin.Cast(unit, Menu.GetHitChance());
         }
 
         private static void CastBushwhack(AIBaseClient? unit)
@@ -190,7 +190,7 @@ namespace EzSeries.Champions.Nidalee
             {
                 if (MH.JavelinReady() && (!MH.PounceReady(3) || unit.Distance(MyHero) > 375))
                 {
-                    var pOutput = Javelin.GetPrediction(unit);
+                    var pOutput = _javelin.GetPrediction(unit);
                     if (pOutput.HitChance >= Menu.GetHitChance())
                         SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                 }
@@ -229,7 +229,7 @@ namespace EzSeries.Champions.Nidalee
                 {
                     if (MH.JavelinReady())
                     {
-                        var pOutput = Javelin.GetPrediction(unit);
+                        var pOutput = _javelin.GetPrediction(unit);
                         if (pOutput.CollisionObjects.Count > 0 || pOutput.HitChance < Menu.GetHitChance())
                             SpellCastProvider.CastSpell(CastSlot.R, MyHero.Position);
                     }
